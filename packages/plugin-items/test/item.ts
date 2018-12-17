@@ -21,8 +21,6 @@ class Todo extends Item {
 
 @suite('Item')
 export class Test extends BasicTest {
-  mocks = [new this.mock.S3()]
-
   @test
   async 'can be created and saved'() {
     const cfg1 = new Config()
@@ -71,6 +69,13 @@ export class Test extends BasicTest {
   async 'can be used with items that have a constructor'() {
     await new Todo('1', 'a').save()
     await Todo.put({ id: '2', text: 'b' })
+    const list = await Todo.all()
+    list.should.be.deep.equal([{ id: '1', text: 'a' }, { id: '2', text: 'b' }])
+  }
+
+  @test
+  async 'can put a list of items'() {
+    await Todo.putAll([{ id: '1', text: 'a' }, { id: '2', text: 'b' }])
     const list = await Todo.all()
     list.should.be.deep.equal([{ id: '1', text: 'a' }, { id: '2', text: 'b' }])
   }

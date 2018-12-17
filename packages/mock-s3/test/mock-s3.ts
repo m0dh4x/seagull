@@ -1,3 +1,4 @@
+import { FS as FSMock } from '@seagull/mock-fs'
 import { BasicTest } from '@seagull/testing'
 import * as AWS from 'aws-sdk'
 import 'chai/register-should'
@@ -48,8 +49,34 @@ export class Test extends BasicTest {
   }
 
   @test
+  async 'can be resetted'() {
+    const mock = new S3()
+    mock.activate()
+    await this.writeFileToS3('stuff.txt', 'lorem ipsum')
+    const { Body } = await this.readFileFromS3('stuff.txt')
+    Body!.should.be.equal('lorem ipsum')
+    mock.reset()
+    const matchAll = await this.listFilesinS3('')
+    matchAll.Contents!.should.be.deep.equal([])
+    mock.deactivate()
+  }
+  @test
+  async 'preserves state for activate/deactivate'() {
+    const mock = new S3()
+    mock.activate()
+    await this.writeFileToS3('stuff.txt', 'lorem ipsum')
+    const { Body } = await this.readFileFromS3('stuff.txt')
+    Body!.should.be.equal('lorem ipsum')
+    mock.deactivate()
+    mock.activate()
+    const matchAll = await this.listFilesinS3('')
+    matchAll.Contents!.should.be.deep.equal([{ Key: 'stuff.txt' }])
+    mock.deactivate()
+  }
+
+  @test
   async 'can work with synchronized disc data'() {
-    const fsMock = new this.mock.FS('/tmp')
+    const fsMock = new FSMock('/tmp')
     fsMock.activate()
     const mock = new S3('/tmp/.data')
     mock.activate()

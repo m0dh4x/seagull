@@ -5,7 +5,7 @@ import { S3 } from '../src'
 
 @suite('S3::DeleteFile')
 export class Test extends BasicTest {
-  mocks = [new this.mock.S3()]
+  mocks = []
 
   @test
   async 'Written Files can be deleted'() {
@@ -20,6 +20,7 @@ export class Test extends BasicTest {
   @test
   async 'DeleteFile can be reverted'() {
     const result = await new S3.DeleteFile('mybucket', 'index.html').revert()
-    result.should.be.equal(true)
+      // tslint:disable-next-line:no-unused-expression
+    ;(result === undefined).should.be.true
   }
 }

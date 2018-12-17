@@ -7,7 +7,7 @@ import * as MockFS from 'mock-fs'
  */
 export class FS implements Mock {
   /**
-   * where to proxy read/write events to on disk instead of actual S3
+   * where to proxy read/write events into memory instead of actual FS
    */
   fakeFolderPath: string
 
@@ -19,16 +19,25 @@ export class FS implements Mock {
   }
 
   /**
-   * redirect S3 interactions to local folder
+   * redirect FS interactions to local folder
    */
   activate = () => {
     MockFS({ [this.fakeFolderPath]: {} })
   }
 
   /**
-   * restore original S3 behavior
+   * restore original FS behavior
    */
   deactivate = () => {
+    // TODO: this also deletes the current mocked file system...
     MockFS.restore()
+  }
+
+  /**
+   * resets mocked fs
+   */
+  reset = () => {
+    MockFS.restore()
+    MockFS({ [this.fakeFolderPath]: {} })
   }
 }

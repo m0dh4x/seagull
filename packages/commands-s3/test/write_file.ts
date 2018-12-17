@@ -5,7 +5,7 @@ import { S3 } from '../src'
 
 @suite('S3::WriteFile')
 export class Test extends BasicTest {
-  mocks = [new this.mock.S3()]
+  mocks = []
 
   @test
   async 'WriteFile and ReadFile work'() {
